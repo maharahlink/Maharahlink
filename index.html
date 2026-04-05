@@ -1,165 +1,439 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مهارة لينك اليمن | منصة التوظيف الذكي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root { --primary: #735c00; --gold: #d4af37; --bg: #fbf9f6; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--bg); color: #1b1c1a; scroll-behavior: smooth; }
-        .job-card { background: white; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 24px; transition: all 0.3s ease; }
-        .job-card:hover { transform: translateY(-5px); border-color: var(--gold); shadow: 0 10px 25px rgba(115, 92, 0, 0.1); }
-        .company-badge { background: #f4f1e8; color: var(--primary); font-weight: 700; font-size: 10px; padding: 4px 10px; border-radius: 8px; }
-    </style>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>مهارة لينك اليمن | منصة توظيف ذكية</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Cairo', sans-serif; }
+.material-symbols-outlined {
+font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+vertical-align: middle;
+}
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #efeeeb; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 9999px; }
+
+/* Animation for cards */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* Upload area drag effect */
+.upload-drag-over {
+    background-color: rgba(212, 175, 55, 0.1);
+    border-color: #d4af37 !important;
+    transform: scale(1.01);
+}
+
+/* Toast notification */
+.toast {
+    animation: slideInRight 0.3s ease forwards;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Loading spinner */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(212,175,55,0.2);
+    border-top-color: #d4af37;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+<script>
+tailwind.config = {
+darkMode: "class",
+theme: {
+extend: {
+colors: {
+"primary": "#735c00",
+"primary-container": "#d4af37",
+"primary-fixed": "#ffe088",
+"secondary": "#9d4139",
+"secondary-fixed": "#ffdad5",
+"on-surface": "#1b1c1a",
+"on-surface-variant": "#4d4635",
+"surface": "#fbf9f6",
+"surface-container-low": "#f5f3f0",
+"surface-container-lowest": "#ffffff",
+"surface-container-high": "#eae8e5",
+"outline-variant": "#d0c5af",
+"error": "#ba1a1a",
+"success": "#10b981",
+},
+borderRadius: {
+"xl": "1.5rem",
+"full": "9999px"
+}
+}
+}
+}
+</script>
 </head>
-<body>
+<body class="bg-surface text-on-surface custom-scrollbar min-h-screen">
 
-    <header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm h-20 border-b border-gold/10">
-        <nav class="max-w-7xl mx-auto px-6 h-full flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-[#735c00] rounded-xl flex items-center justify-center text-white font-bold">ML</div>
-                <span class="text-2xl font-800 text-[#735c00]">مهارة <span class="text-[#d4af37]">لينك</span></span>
-            </div>
-            <div class="flex bg-gray-100 p-1 rounded-full">
-                <button onclick="switchView('individual')" id="tab-ind" class="px-6 py-2 rounded-full text-sm font-bold bg-white shadow-sm text-primary">أنا باحث عن عمل</button>
-                <button onclick="switchView('company')" id="tab-com" class="px-6 py-2 rounded-full text-sm font-bold text-gray-500">أنا صاحب شركة</button>
-            </div>
-        </nav>
-    </header>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-[0px_12px_32px_rgba(115,92,0,0.06)] font-['Cairo'] text-right">
+<nav class="flex flex-row-reverse justify-between items-center px-4 md:px-8 h-20 w-full max-w-full">
+<div class="flex items-center gap-6 flex-row-reverse">
+<span class="text-2xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">مهارة <span class="text-primary">لينك</span></span>
+<div class="hidden md:flex flex-row-reverse gap-8">
+<a class="text-stone-600 font-medium hover:text-secondary transition-colors cursor-pointer" onclick="switchView('individual')">الرئيسية</a>
+<a class="text-primary font-bold border-b-2 border-primary-container pb-1 cursor-pointer" onclick="switchView('individual')">الباحث عن عمل</a>
+<a class="text-stone-600 font-medium hover:text-secondary transition-colors cursor-pointer" onclick="switchView('company')">صاحب شركة</a>
+<a class="text-stone-600 font-medium hover:text-secondary transition-colors" href="#">المقالات</a>
+</div>
+</div>
+<div class="flex items-center gap-4 flex-row-reverse">
+<button class="p-2 text-stone-600 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+</button>
+<button class="p-2 text-stone-600 hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container bg-primary-container flex items-center justify-center" id="userAvatar">
+<span class="text-primary text-xl font-bold" id="avatarLetter">ع</span>
+</div>
+<span class="hidden md:block text-sm font-medium text-on-surface" id="userName">باحث عن عمل</span>
+</div>
+</nav>
+</header>
 
-    <main class="pt-28 pb-20 max-w-7xl mx-auto px-6">
-        
-        <div id="individual-view" class="space-y-10">
-            
-            <section class="bg-gradient-to-r from-[#735c00] to-[#d4af37] rounded-[40px] p-10 text-white shadow-2xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <h1 class="text-3xl font-800 mb-4">ارفع سيرتك الذاتية.. ودع الشركات تجدك!</h1>
-                    <p class="text-white/80 max-w-lg mb-6">يقوم الذكاء الاصطناعي بمطابقة مهاراتك فوراً مع الوظائف المتاحة في السوق اليمني.</p>
-                    <button onclick="alert('جاري فتح معالج الرفع...')" class="bg-white text-primary px-8 py-3 rounded-2xl font-bold hover:bg-stone-100 transition">ارفع ملف الـ PDF 📄</button>
-                </div>
-                <i data-lucide="sparkles" class="absolute -bottom-10 -left-10 w-60 h-60 opacity-10"></i>
-            </section>
+<main class="pt-28 pb-24 px-4 md:px-12 max-w-7xl mx-auto flex flex-col gap-8">
 
-            <section>
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-800 text-[#735c00]">وظائف مقترحة لك الآن 🔥</h2>
-                    <span class="text-sm text-gray-400">تحديث مباشر من الشركات</span>
-                </div>
+<!-- Hero & Search Header -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-low p-6 md:p-10">
+<div class="relative z-10 space-y-6">
+<h1 class="text-2xl md:text-4xl font-bold text-on-surface leading-tight" id="heroTitle">اكتشف <span class="text-primary italic">فرصتك</span> المهنية في اليمن</h1>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed" id="heroSubtitle">نحن نربط بين أفضل الكوادر اليمنية والشركات الرائدة. ابدأ مسيرتك المهنية اليوم.</p>
+<div class="flex gap-4 mt-4">
+<button onclick="switchView('individual')" id="btnIndividual" class="px-6 py-2 rounded-full font-bold transition-all shadow-md bg-gradient-to-r from-primary to-primary-container text-white">باحث عن عمل</button>
+<button onclick="switchView('company')" id="btnCompany" class="px-6 py-2 rounded-full font-bold transition-all shadow-md bg-white text-primary border border-primary-container">صاحب شركة</button>
+</div>
+</div>
+<div class="absolute -top-24 -left-24 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary-fixed/10 rounded-full blur-3xl"></div>
+</section>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="job-card p-6 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between mb-4">
-                                <span class="company-badge uppercase tracking-tighter">مجموعة هائل سعيد أنعم (HSA)</span>
-                                <span class="text-green-600 font-bold text-xs">نشط الآن</span>
-                            </div>
-                            <h3 class="text-xl font-800 mb-2">مدير سلاسل توريد (Supply Chain)</h3>
-                            <p class="text-sm text-gray-500 mb-4 leading-relaxed">المتطلبات: خبرة 5 سنوات، إجادة الإنجليزية، معرفة بأنظمة ERP، والقدرة على العمل في تعز أو صنعاء.</p>
-                        </div>
-                        <div class="flex justify-between items-center pt-4 border-t border-gray-50">
-                            <span class="text-primary font-bold">راتب مجزي + بدل سكن</span>
-                            <button class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold">تقديم سريع</button>
-                        </div>
-                    </div>
+<!-- ========== SECTION: الباحث عن عمل (رفع CV) ========== -->
+<div id="individualSection" class="space-y-6">
+<div class="grid grid-cols-3 gap-4">
+<div class="bg-surface-container-lowest rounded-xl p-4 text-center shadow-sm"><div class="text-2xl font-bold text-primary" id="appliedJobs">0</div><div class="text-xs text-stone-500">طلبات قدمتها</div></div>
+<div class="bg-surface-container-lowest rounded-xl p-4 text-center shadow-sm"><div class="text-2xl font-bold text-primary" id="acceptedOffers">0</div><div class="text-xs text-stone-500">تم قبولك</div></div>
+<div class="bg-surface-container-lowest rounded-xl p-4 text-center shadow-sm"><div class="text-2xl font-bold text-primary" id="profileViews">0</div><div class="text-xs text-stone-500">مشاهدة ملفك</div></div>
+</div>
+<div id="dropZone" class="bg-surface-container-lowest rounded-xl p-10 text-center border-3 border-dashed border-primary-container/50 cursor-pointer transition-all hover:bg-primary-fixed/10">
+<span class="material-symbols-outlined text-6xl text-primary">cloud_upload</span>
+<h3 class="text-xl font-bold mt-4">ارفع سيرتك الذاتية</h3>
+<p class="text-stone-500 mt-2">اسحب ملف PDF هنا أو اضغط للاختيار</p>
+<input type="file" id="cvFile" accept=".pdf" class="hidden">
+<button id="uploadBtn" class="mt-6 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-white rounded-full font-bold shadow-md hover:shadow-lg transition-all">اختيار ملف PDF</button>
+</div>
+<div id="analysisResult"></div>
+</div>
 
-                    <div class="job-card p-6 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between mb-4">
-                                <span class="company-badge uppercase tracking-tighter">مصرف الكريمي الإسلامي</span>
-                                <span class="text-green-600 font-bold text-xs">نشط الآن</span>
-                            </div>
-                            <h3 class="text-xl font-800 mb-2">محلل مالي / محاسب تكاليف</h3>
-                            <p class="text-sm text-gray-500 mb-4 leading-relaxed">المتطلبات: بكالوريوس محاسبة، مهارات متقدمة في Excel، القدرة على تحليل البيانات المالية بدقة عالية.</p>
-                        </div>
-                        <div class="flex justify-between items-center pt-4 border-t border-gray-50">
-                            <span class="text-primary font-bold">تأمين صحي + حوافز</span>
-                            <button class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold">تقديم سريع</button>
-                        </div>
-                    </div>
+<!-- ========== SECTION: صاحب شركة (البحث عن مرشحين) ========== -->
+<div id="companySection" class="space-y-6 hidden">
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
+<div class="flex flex-wrap gap-3 items-center justify-between">
+<div class="flex flex-wrap gap-2">
+<button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="all" onclick="setFilter('all')">الكل</button>
+<button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="تقنية" onclick="setFilter('تقنية')">💻 تقنية</button>
+<button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="هندسة" onclick="setFilter('هندسة')">🏗️ هندسة</button>
+<button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="محاسبة" onclick="setFilter('محاسبة')">📊 محاسبة</button>
+<button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="تسويق" onclick="setFilter('تسويق')">📢 تسويق</button>
+<button class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="إدارة" onclick="setFilter('إدارة')">📋 إدارة</button>
+</div>
+<select id="cityFilter" class="px-4 py-2 rounded-full border border-outline-variant bg-white text-sm">
+<option value="all">جميع المحافظات</option>
+<option value="صنعاء">صنعاء</option>
+<option value="عدن">عدن</option>
+<option value="تعز">تعز</option>
+<option value="الحديدة">الحديدة</option>
+<option value="المكلا">المكلا</option>
+<option value="إب">إب</option>
+<option value="حضرموت">حضرموت</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="candidatesContainer"></div>
+<div class="bg-gradient-to-r from-primary/10 to-primary-container/10 rounded-xl p-5 text-center"><p class="text-on-surface"><span class="font-bold text-primary" id="candidatesCount">0</span> مرشح متاح حالياً في قاعدة بياناتنا</p></div>
+</div>
+</main>
 
-                    <div class="job-card p-6 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between mb-4">
-                                <span class="company-badge uppercase tracking-tighter">يمن سوفت (YemenSoft)</span>
-                                <span class="text-green-600 font-bold text-xs">نشط الآن</span>
-                            </div>
-                            <h3 class="text-xl font-800 mb-2">مطور برمجيات (Full Stack Developer)</h3>
-                            <p class="text-sm text-gray-500 mb-4 leading-relaxed">المتطلبات: خبرة في React و Node.js، القدرة على تطوير الأنظمة المحاسبية السحابية، والعمل ضمن فريق تقني.</p>
-                        </div>
-                        <div class="flex justify-between items-center pt-4 border-t border-gray-50">
-                            <span class="text-primary font-bold">ساعات عمل مرنة</span>
-                            <button class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold">تقديم سريع</button>
-                        </div>
-                    </div>
+<!-- Footer -->
+<footer class="bg-surface-container-high mt-16 py-10 px-4 md:px-12 border-t border-outline-variant/30">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-right">
+<div><h3 class="font-bold text-primary text-lg mb-4">مهارة لينك</h3><p class="text-sm text-stone-500">منصة يمنية رائدة في التوظيف الذكي باستخدام الذكاء الاصطناعي.</p></div>
+<div><h4 class="font-bold mb-4">روابط سريعة</h4><ul class="space-y-2 text-sm text-stone-500"><li><a href="#" class="hover:text-primary">الرئيسية</a></li><li><a href="#" class="hover:text-primary">الوظائف</a></li><li><a href="#" class="hover:text-primary">المواهب</a></li></ul></div>
+<div><h4 class="font-bold mb-4">نظام العمولة</h4><p class="text-sm text-stone-500">عمولة 5% فقط من الراتب الشهري الأول، لا رسوم إضافية.</p></div>
+<div><h4 class="font-bold mb-4">تواصل معنا</h4><p class="text-sm text-stone-500">info@maharahlink.ye</p><p class="text-sm text-stone-500">+967 77 123 4567</p></div>
+</div>
+<div class="text-center text-xs text-stone-400 mt-8 pt-6 border-t border-outline-variant/20">جميع الحقوق محفوظة لمهارة لينك اليمن © 2026 | توظيف بالذكاء الاصطناعي</div>
+</footer>
 
-                    <div class="job-card p-6 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between mb-4">
-                                <span class="company-badge uppercase tracking-tighter">شركة تل يمن (TeleYemen)</span>
-                                <span class="text-green-600 font-bold text-xs">نشط الآن</span>
-                            </div>
-                            <h3 class="text-xl font-800 mb-2">مهندس أمن سيبراني</h3>
-                            <p class="text-sm text-gray-500 mb-4 leading-relaxed">المتطلبات: شهادات احترافية في الأمن الرقمي، مراقبة الشبكات وحمايتها من الاختراقات، العمل بنظام النوبات.</p>
-                        </div>
-                        <div class="flex justify-between items-center pt-4 border-t border-gray-50">
-                            <span class="text-primary font-bold">عقود سنوية مستدامة</span>
-                            <button class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold">تقديم سريع</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+<!-- Commission Modal -->
+<div id="commissionModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop" onclick="if(event.target===this) closeModal()">
+<div class="bg-surface-container-lowest rounded-2xl p-6 max-w-md w-full mx-4 text-center shadow-2xl transform transition-all">
+<span class="material-symbols-outlined text-6xl text-primary">handshake</span>
+<h3 class="text-xl font-bold mt-3">تأكيد التواصل</h3>
+<div class="bg-primary-fixed/20 rounded-xl p-4 my-5 text-right">
+<p class="font-bold">عمولة المنصة: <span class="text-primary">5% من الراتب الشهري الأول</span></p>
+<p class="text-sm text-stone-600 mt-2">الحد الأدنى: 10,000 ريال | الحد الأقصى: 50,000 ريال</p>
+<p class="text-xs text-error mt-3">⚠️ يتم تحصيل العمولة بعد توقيع العقد بنجاح</p>
+</div>
+<div class="flex gap-3 justify-center">
+<button onclick="confirmConnection()" class="px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-white rounded-full font-bold">موافق، تواصل</button>
+<button onclick="closeModal()" class="px-6 py-2 border border-primary text-primary rounded-full font-bold">إلغاء</button>
+</div>
+</div>
+</div>
 
-        <div id="company-view" class="hidden space-y-8">
-            <h2 class="text-2xl font-800 text-primary">قائمة المتقدمين المميزين 👤</h2>
-            <div id="candidates-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-        </div>
-    </main>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 flex-col gap-4">
+<div class="spinner"></div>
+<p class="text-white">جاري تحليل البيانات باستخدام الذكاء الاصطناعي...</p>
+</div>
 
-    <script>
-        lucide.createIcons();
+<!-- Toast Container -->
+<div id="toastContainer" class="fixed bottom-24 right-4 z-50 space-y-2"></div>
 
-        const candidates = [
-            { id: 1, name: "محمد أحمد الحيمي", skills: ["تطوير ويب", "AI"], loc: "صنعاء", match: 98 },
-            { id: 2, name: "أروى عبدالله الذبحاني", skills: ["إدارة مشاريع", "PMP"], loc: "تعز", match: 95 },
-            { id: 3, name: "خالد علي الصبري", skills: ["محاسبة قانونية"], loc: "عدن", match: 87 }
-        ];
+<script>
+// ========== DATABASE ==========
+const candidatesData = [
+{ name: "محمد أحمد الحيمي", skills: ["React", "Node.js", "Python", "MongoDB"], experience: 5, location: "صنعاء", category: "تقنية", match: 98, verified: true, salary: 250000, phone: "771234567" },
+{ name: "أروى عبدالله الذبحاني", skills: ["PMP", "Scrum", "JIRA", "Leadership"], experience: 8, location: "تعز", category: "إدارة", match: 95, verified: true, salary: 350000, phone: "773456789" },
+{ name: "خالد علي الصبري", skills: ["QuickBooks", "Excel", "Tax", "Auditing"], experience: 3, location: "عدن", category: "محاسبة", match: 87, verified: false, salary: 120000, phone: "774567890" },
+{ name: "سمية عبده الناشري", skills: ["CCNA", "Network Security", "Firewall"], experience: 4, location: "الحديدة", category: "تقنية", match: 89, verified: true, salary: 180000, phone: "775678901" },
+{ name: "عبدالرحمن ناجي", skills: ["AutoCAD", "Revit", "Structural Design"], experience: 6, location: "صنعاء", category: "هندسة", match: 92, verified: true, salary: 220000, phone: "776789012" },
+{ name: "فاطمة يحيى الحبشي", skills: ["Digital Marketing", "SEO", "Content Writing"], experience: 3, location: "عدن", category: "تسويق", match: 91, verified: false, salary: 130000, phone: "777890123" },
+{ name: "ياسر محمد القدسي", skills: ["Flutter", "Firebase", "UI/UX"], experience: 2, location: "تعز", category: "تقنية", match: 85, verified: false, salary: 100000, phone: "778901234" },
+{ name: "هدى علي الأغبري", skills: ["HR Management", "Recruitment", "Payroll"], experience: 7, location: "صنعاء", category: "إدارة", match: 94, verified: true, salary: 280000, phone: "779012345" },
+{ name: "نبيل أحمد الشرفي", skills: ["Sales", "CRM", "Negotiation"], experience: 4, location: "المكلا", category: "تسويق", match: 83, verified: false, salary: 140000, phone: "780123456" },
+{ name: "إيمان محمد مقبل", skills: ["Graphic Design", "Adobe Suite", "Branding"], experience: 3, location: "إب", category: "تقنية", match: 88, verified: true, salary: 110000, phone: "781234567" },
+{ name: "علي حسن الثور", skills: ["Electrical Engineering", "PLC", "Automation"], experience: 9, location: "حضرموت", category: "هندسة", match: 96, verified: true, salary: 320000, phone: "782345678" },
+{ name: "منى صالح العنسي", skills: ["Financial Analysis", "IFRS", "ERP"], experience: 5, location: "صنعاء", category: "محاسبة", match: 90, verified: true, salary: 200000, phone: "783456789" },
+{ name: "سالم بن بريك", skills: ["Data Analysis", "SQL", "Tableau"], experience: 4, location: "المكلا", category: "تقنية", match: 93, verified: true, salary: 210000, phone: "784567890" },
+{ name: "ليلى الحضرمي", skills: ["Marketing Strategy", "Social Media"], experience: 5, location: "حضرموت", category: "تسويق", match: 89, verified: true, salary: 160000, phone: "785678901" }
+];
 
-        function switchView(type) {
-            const ind = document.getElementById('individual-view');
-            const com = document.getElementById('company-view');
-            const btnInd = document.getElementById('tab-ind');
-            const btnCom = document.getElementById('tab-com');
+// ========== GLOBAL VARIABLES ==========
+let currentView = 'individual';
+let currentFilter = 'all';
+let currentCity = 'all';
+let selectedCandidate = null;
+let userStats = { appliedJobs: 3, acceptedOffers: 1, profileViews: 47 };
 
-            if(type === 'individual') {
-                ind.classList.remove('hidden'); com.classList.add('hidden');
-                btnInd.className = "px-6 py-2 rounded-full text-sm font-bold bg-white shadow-sm text-primary";
-                btnCom.className = "px-6 py-2 rounded-full text-sm font-bold text-gray-500";
-            } else {
-                ind.classList.add('hidden'); com.classList.remove('hidden');
-                btnCom.className = "px-6 py-2 rounded-full text-sm font-bold bg-white shadow-sm text-primary";
-                btnInd.className = "px-6 py-2 rounded-full text-sm font-bold text-gray-500";
-                render();
-            }
-        }
+// ========== HELPER FUNCTIONS ==========
+function showToast(message, type = 'success') {
+const container = document.getElementById('toastContainer');
+const toast = document.createElement('div');
+toast.className = `toast bg-white rounded-xl shadow-lg p-4 flex items-center gap-3 border-r-4 ${type === 'success' ? 'border-r-success' : 'border-r-error'} min-w-[280px]`;
+toast.innerHTML = `<span class="material-symbols-outlined ${type === 'success' ? 'text-success' : 'text-error'}">${type === 'success' ? 'check_circle' : 'error'}</span><span class="text-sm">${message}</span>`;
+container.appendChild(toast);
+setTimeout(() => toast.remove(), 4000);
+}
 
-        function render() {
-            const grid = document.getElementById('candidates-grid');
-            grid.innerHTML = candidates.map(c => `
-                <div class="bg-white p-6 rounded-[32px] border border-gold/10 shadow-sm">
-                    <h3 class="font-bold text-lg">${c.name}</h3>
-                    <p class="text-xs text-gray-400 mb-4">${c.skills.join(' • ')}</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-primary font-bold">%${c.match} توافق</span>
-                        <button class="bg-gold/10 text-primary px-4 py-2 rounded-xl text-xs font-bold">التفاصيل</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-    </script>
+function showLoading(show) {
+const overlay = document.getElementById('loadingOverlay');
+if (show) overlay.classList.remove('hidden');
+else overlay.classList.add('hidden');
+}
+
+function updateUI() {
+document.getElementById('appliedJobs').textContent = userStats.appliedJobs;
+document.getElementById('acceptedOffers').textContent = userStats.acceptedOffers;
+document.getElementById('profileViews').textContent = userStats.profileViews;
+document.getElementById('candidatesCount').textContent = candidatesData.length;
+}
+
+// ========== SWITCH BETWEEN VIEWS ==========
+function switchView(view) {
+currentView = view;
+const individualSection = document.getElementById('individualSection');
+const companySection = document.getElementById('companySection');
+const btnIndividual = document.getElementById('btnIndividual');
+const btnCompany = document.getElementById('btnCompany');
+const heroTitle = document.getElementById('heroTitle');
+const heroSubtitle = document.getElementById('heroSubtitle');
+
+if (view === 'individual') {
+individualSection.classList.remove('hidden');
+companySection.classList.add('hidden');
+btnIndividual.className = "px-6 py-2 rounded-full font-bold transition-all shadow-md bg-gradient-to-r from-primary to-primary-container text-white";
+btnCompany.className = "px-6 py-2 rounded-full font-bold transition-all shadow-md bg-white text-primary border border-primary-container";
+heroTitle.innerHTML = 'اكتشف <span class="text-primary italic">فرصتك</span> المهنية في اليمن';
+heroSubtitle.textContent = 'ارفع سيرتك الذاتية ودع الذكاء الاصطناعي يجد لك أفضل الفرص';
+document.getElementById('userName').textContent = 'باحث عن عمل';
+document.getElementById('avatarLetter').textContent = 'ع';
+} else {
+individualSection.classList.add('hidden');
+companySection.classList.remove('hidden');
+btnCompany.className = "px-6 py-2 rounded-full font-bold transition-all shadow-md bg-gradient-to-r from-primary to-primary-container text-white";
+btnIndividual.className = "px-6 py-2 rounded-full font-bold transition-all shadow-md bg-white text-primary border border-primary-container";
+heroTitle.innerHTML = 'ابحث عن <span class="text-primary italic">أفضل الكفاءات</span> لشركتك';
+heroSubtitle.textContent = 'تصفح آلاف المرشحين المؤهلين وتواصل معهم مباشرة';
+document.getElementById('userName').textContent = 'صاحب شركة';
+document.getElementById('avatarLetter').textContent = 'ش';
+renderCandidates();
+}
+}
+
+// ========== FILTERS ==========
+function setFilter(filter) {
+currentFilter = filter;
+document.querySelectorAll('.filter-btn').forEach(btn => {
+if (btn.dataset.filter === filter) {
+btn.className = "px-4 py-2 rounded-full text-sm font-medium transition-all bg-primary text-white";
+} else {
+btn.className = "px-4 py-2 rounded-full text-sm font-medium transition-all bg-surface-container-low text-stone-600 hover:bg-primary-fixed/30";
+}
+});
+renderCandidates();
+}
+
+document.getElementById('cityFilter').addEventListener('change', (e) => {
+currentCity = e.target.value;
+renderCandidates();
+});
+
+function renderCandidates() {
+const container = document.getElementById('candidatesContainer');
+if (!container) return;
+
+const filtered = candidatesData.filter(c => (currentFilter === 'all' || c.category === currentFilter) && (currentCity === 'all' || c.location === currentCity));
+
+if (filtered.length === 0) {
+container.innerHTML = '<div class="col-span-2 text-center py-12 text-stone-500">لا يوجد مرشحون يطابقون هذه الفلاتر حالياً</div>';
+return;
+}
+
+container.innerHTML = filtered.map((c, i) => `
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm hover:shadow-md transition-all fade-in-up" style="animation-delay: ${i * 0.05}s">
+<div class="flex justify-between items-start">
+<span class="bg-primary-container/20 text-primary px-3 py-1 rounded-full text-sm font-bold">${c.match}% تطابق</span>
+<span class="text-xs text-stone-400">${c.experience} سنوات خبرة</span>
+</div>
+<h3 class="text-lg font-bold mt-3">${c.name}</h3>
+<div class="flex flex-wrap gap-2 mt-2">
+<span class="text-xs text-stone-500"><span class="material-symbols-outlined text-sm">location_on</span> ${c.location}</span>
+<span class="text-xs text-stone-500"><span class="material-symbols-outlined text-sm">work</span> ${c.category}</span>
+</div>
+<div class="flex flex-wrap gap-2 mt-3">${c.skills.slice(0,3).map(s => `<span class="bg-surface-container-high px-2 py-1 rounded-lg text-xs">${s}</span>`).join('')}</div>
+<div class="mt-3 text-primary font-bold">${c.salary.toLocaleString()} ريال</div>
+<button onclick='openCommissionModal(${JSON.stringify(c).replace(/'/g, "&#39;")})' class="w-full mt-4 py-2 bg-gradient-to-r from-primary to-primary-container text-white rounded-full font-bold text-sm hover:shadow-md transition-all">تواصل الآن (عمولة 5%)</button>
+</div>`).join('');
+}
+
+// ========== COMMISSION MODAL ==========
+function openCommissionModal(candidate) {
+selectedCandidate = candidate;
+document.getElementById('commissionModal').classList.remove('hidden');
+document.getElementById('commissionModal').classList.add('flex');
+}
+
+function closeModal() {
+document.getElementById('commissionModal').classList.add('hidden');
+document.getElementById('commissionModal').classList.remove('flex');
+selectedCandidate = null;
+}
+
+function confirmConnection() {
+if (!selectedCandidate) return;
+closeModal();
+showLoading(true);
+setTimeout(() => {
+showLoading(false);
+showToast(`تم فتح قناة اتصال مع ${selectedCandidate.name} عبر الواتساب: ${selectedCandidate.phone}`, 'success');
+userStats.appliedJobs++;
+updateUI();
+}, 2000);
+}
+
+// ========== CV UPLOAD & AI ANALYSIS ==========
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('cvFile');
+const uploadBtn = document.getElementById('uploadBtn');
+
+function handleFileUpload(file) {
+if (!file || file.type !== 'application/pdf') {
+showToast('الرجاء رفع ملف PDF صالح', 'error');
+return;
+}
+showLoading(true);
+setTimeout(() => {
+showLoading(false);
+showToast('تم تحليل سيرتك الذاتية بنجاح!', 'success');
+displayAnalysisResults();
+}, 3000);
+}
+
+function displayAnalysisResults() {
+const resultDiv = document.getElementById('analysisResult');
+resultDiv.innerHTML = `
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-md border-t-4 border-primary-container fade-in-up">
+<div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-3xl text-primary">auto_awesome</span><h3 class="text-xl font-bold">تقرير الذكاء الاصطناعي</h3></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+<div class="text-center p-3 bg-primary-fixed/10 rounded-xl"><div class="text-2xl font-bold text-primary">94%</div><div class="text-xs">توافق مع السوق</div></div>
+<div class="text-center p-3 bg-primary-fixed/10 rounded-xl"><div class="text-2xl font-bold text-primary">4+</div><div class="text-xs">سنوات خبرة مكتشفة</div></div>
+<div class="text-center p-3 bg-primary-fixed/10 rounded-xl"><div class="text-2xl font-bold text-primary">8</div><div class="text-xs">وظائف مقترحة</div></div>
+<div class="text-center p-3 bg-primary-fixed/10 rounded-xl"><div class="text-2xl font-bold text-primary">15%</div><div class="text-xs">فرصة تحسين</div></div>
+</div>
+<div class="bg-primary-fixed/10 rounded-xl p-4">
+<p class="font-bold mb-2">🎯 وظائف مقترحة لك:</p>
+<p>• مطور Full Stack - شركة يمن سوفت</p>
+<p>• محلل بيانات - بنك الكريمي</p>
+<p class="mt-3 text-sm text-stone-600">💡 نصيحة: إضافة شهادة PMP تزيد فرصك بنسبة 15%</p>
+</div>
+</div>`;
+}
+
+if (dropZone) {
+dropZone.onclick = () => fileInput.click();
+uploadBtn.onclick = (e) => { e.stopPropagation(); fileInput.click(); };
+fileInput.onchange = (e) => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); };
+dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('upload-drag-over'); };
+dropZone.ondragleave = () => dropZone.classList.remove('upload-drag-over');
+dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('upload-drag-over'); if (e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0]); };
+}
+
+// ========== INITIALIZE ==========
+updateUI();
+switchView('individual');
+
+setTimeout(() => {
+document.querySelectorAll('.filter-btn').forEach(btn => {
+if (btn.dataset.filter === 'all') {
+btn.className = "px-4 py-2 rounded-full text-sm font-medium transition-all bg-primary text-white";
+} else {
+btn.className = "px-4 py-2 rounded-full text-sm font-medium transition-all bg-surface-container-low text-stone-600 hover:bg-primary-fixed/30";
+}
+});
+}, 100);
+</script>
 </body>
-</html>
+    </html>
